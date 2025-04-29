@@ -21,24 +21,25 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|200',
-            'author' => 'required|string|80',
-            'category'=> 'required|string|60',
-            'date' => 'required|date'
+        $validated = $request->validate([
+            'title' => 'required|string|max:200',
+            'author' => 'required|string|max:80',
+            'category' => 'required|string|max:60',
+            'date' => 'required|date',
         ]);
-        
-        $book = Book::create($request->all());
-        return response()->json($book, 200);
+
+        $book = Book::create($validated);
+
+        return response()->json($book, 201); // 200 est un statue envoyé en cas de réussite de création
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Book $book)
+    public function show($id)
     {
         $book = Book::find($id);
-        return response()->json($book, 200);
+        return response()->json($book, 200); 
     }
 
     /**
@@ -46,8 +47,18 @@ class BookController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request = Book::find($id);
-        $book = update($request->all());
+        $book = Book::find($id);
+        // oublie de mettre des max: 
+        $validate = $request->validate([
+
+            'title' => 'required|string|max:200',
+            'author' => 'required|string|max:80',
+            'category'=> 'required|string|max:60',
+            'date' => 'required|date'
+
+        ]);
+
+        $book->update($validate);
         return response()->json($book, 200);
     }
 
@@ -58,6 +69,6 @@ class BookController extends Controller
     {
         $delete = Book::find($id);
         $delete->delete();
-        return response()->json($delete, 200);
+        return response()->json($delete, 204); // 204 est un statue envoyé en cas de reussite de suppression
     }
 }

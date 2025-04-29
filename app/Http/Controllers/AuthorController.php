@@ -21,12 +21,12 @@ class AuthorController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|80'
+        $validate = $request->validate([
+            'name' => 'required|string|max:80'
         ]);
         
-        $author = Author::create($request->all());
-        return response()->json($author, 200);
+        $author = Author::create($validate);
+        return response()->json($author, 201);
     }
 
     /**
@@ -43,8 +43,13 @@ class AuthorController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $request = Author::find($id);
-        $author = update($request->all());
+        $author = Author::find($id);
+        $validate = $request->validate([
+
+            'name' => 'required|string|80'
+
+        ]);
+        $author = update($validate);
         return response()->json($author, 200);
     }
 
@@ -55,6 +60,6 @@ class AuthorController extends Controller
     {
         $delete = Author::find($id);
         $delete->delete();
-        return response()->json($delete, 200);
+        return response()->json($delete, 204);
     }
 }
